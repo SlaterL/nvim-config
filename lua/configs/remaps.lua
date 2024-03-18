@@ -35,3 +35,11 @@ vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Sav
 -- Move lines up or down by one
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
+local map = vim.keymap.set
+map("i", "<C-b>", "<ESC>^i", { desc = "Move Beginning of line" })
+map("i", "<C-e>", "<End>", { desc = "Move End of line" })
+map("i", "<C-h>", "<Left>", { desc = "Move Left" })
+map("i", "<C-l>", "<Right>", { desc = "Move Right" })
+map("i", "<C-j>", "<Down>", { desc = "Move Down" })
+map("i", "<C-k>", "<Up>", { desc = "Move Up" })
