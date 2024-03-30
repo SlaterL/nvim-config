@@ -5,10 +5,10 @@ return {
 		"nvim-lua/plenary.nvim",
 	},
 	keys = {
-		{ "<leader>ha", "<cmd>lua require('harpoon.mark').add_file()<cr>", desc = "Append file to harpoon list" },
+		{ "<leader>ha", "<cmd>lua require('harpoon.mark').add_file()<cr>", desc = "[A]ppend file to harpoon list" },
 		{ "L", "<cmd>lua require('harpoon.ui').nav_next()<cr>", desc = "Go to next harpoon mark" },
 		{ "H", "<cmd>lua require('harpoon.ui').nav_prev()<cr>", desc = "Go to previous harpoon mark" },
-		{ "<leader>hs", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", desc = "Show harpoon list" },
+		{ "<leader>hs", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", desc = "[S]how harpoon list" },
 	},
 	config = function()
 		vim.cmd("highlight! HarpoonActive guibg=NONE")

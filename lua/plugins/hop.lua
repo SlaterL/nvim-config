@@ -3,7 +3,7 @@ return {
 	version = "*",
 	opts = {},
 	keys = {
-		{ "Fw", "<cmd>HopWord<cr>", desc = "[F]ind [W]ord", noremap = true },
-		{ "Fl", "<cmd>HopWordCurrentLine<cr>", desc = "[F]ind [L]ine", noremap = true },
+		{ "<leader>hw", "<cmd>HopWord<cr>", desc = "[H]op [W]ord", noremap = true },
+		{ "<leader>hl", "<cmd>HopWordCurrentLine<cr>", desc = "[H]op Current [L]ine", noremap = true },
 	},
 }
