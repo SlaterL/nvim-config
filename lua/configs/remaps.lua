@@ -43,3 +43,6 @@ map("i", "<C-h>", "<Left>", { desc = "Move Left" })
 map("i", "<C-l>", "<Right>", { desc = "Move Right" })
 map("i", "<C-j>", "<Down>", { desc = "Move Down" })
 map("i", "<C-k>", "<Up>", { desc = "Move Up" })
+
+map("n", "J", "<cmd>lua vim.diagnostic.open_float()<cr>")
+map("n", "<leader>st", "<cmd>TodoTelescope<cr>", { desc = "[S]earch [T]odo list" })
