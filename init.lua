@@ -46,3 +46,20 @@ require("lazy").setup({
 vim.cmd([[colorscheme tokyonight-night]])
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+require("lualine").setup({
+	sections = {
+		-- lualine_b = {
+		-- 	{
+		-- 		function()
+		-- 			return require("grapple").name_or_index({ "name" })
+		-- 		end,
+		-- 		cond = function()
+		-- 			return package.loaded["grapple"] and require("grapple").exists()
+		-- 		end,
+		-- 	},
+		-- },
+		lualine_b = { "grapple" },
+		lualine_c = { { "filename", path = 1 } },
+	},
+})

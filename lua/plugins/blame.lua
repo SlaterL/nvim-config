@@ -7,7 +7,10 @@
 
 return {
 	"FabijanZulj/blame.nvim",
+	config = function()
+		require("blame").setup()
+	end,
 	keys = {
-		{ "<leader>Gb", "<cmd>ToggleBlame virtual<cr>", desc = "Toggle Git Blame" },
+		{ "<leader>Gb", "<cmd>BlameToggle virtual<cr>", desc = "Toggle Git Blame" },
 	},
 }
