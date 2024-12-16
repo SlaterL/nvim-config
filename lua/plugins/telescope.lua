@@ -65,6 +65,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
 				["ui-select"] = {
 					require("telescope.themes").get_dropdown(),
 				},
+				fzf = {},
 			},
 		})
 
@@ -94,13 +95,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
 		vim.keymap.set("n", "<leader>Gc", "<cmd>Telescope git_commits<CR>", { desc = "[G]it [C]ommits" })
 		vim.keymap.set("n", "<leader>Gs", "<cmd>Telescope git_status<CR>", { desc = "[G]it [S]tatus" })
 		-- Slightly advanced example of overriding default behavior and theme
-		vim.keymap.set("n", "/", function()
+		vim.keymap.set("n", "<leader>si", function()
 			-- You can pass additional configuration to telescope to change theme, layout, etc.
 			builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 				winblend = 10,
 				previewer = true,
 			}))
-		end, { desc = "[/] Fuzzily search in current buffer" })
+		end, { desc = "[S]earch [I]nside the current file" })
 
 		-- Slightly advanced example of overriding default behavior and theme
 		vim.keymap.set("n", "<leader>/", function()

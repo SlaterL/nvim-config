@@ -56,6 +56,7 @@ map("n", "_", "<cmd>LspRestart<cr>")
 map("n", "<C-]>", "<cmd>cnext<CR>zz")
 map("n", "<C-[>", "<cmd>cprev<CR>zz")
 
-map("n", "<leader>p", [[:%s/<C-r><C-w>//gc<Left><Left><Left>]], { desc = "Find and Re[p]lace" })
+map("n", "<leader>pw", [[:%s/<C-r><C-w>//gc<Left><Left><Left>]], { desc = "Find and Re[p]lace" })
+map("n", "<leader>pp", [[:%s///gc<Left><Left><Left><Left>]], { desc = "Find and Re[p]lace" })
 
 map("n", "d", '"_d', { desc = "Better Del", noremap = true })
