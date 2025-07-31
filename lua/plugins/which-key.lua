@@ -3,16 +3,19 @@ return { -- Useful plugin to show you pending keybinds.
 	event = "VeryLazy", -- Sets the loading event to 'VeryLazy'
 	config = function() -- This is the function that runs, AFTER loading
 		require("which-key").setup()
-
+		--
 		-- Document existing key chains
-		require("which-key").register({
-			["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-			["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-			["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-			["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-			["<leader>h"] = { name = "[H]arpoon", _ = "which_key_ignore" },
-			["<leader>G"] = { name = "[G]it", _ = "which_key_ignore" },
-			["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+		local wk = require("which-key")
+		wk.add({
+			{ "<leader>s", group = "Search" }, -- group
+			{ "<leader>c", group = "Code" }, -- group
+			{ "<leader>p", group = "Replace" }, -- group
+			{ "<leader>d", group = "Document" }, -- group
+			{ "<leader>r", group = "Rename" }, -- group
+			{ "<leader>h", group = "Harpoon" }, -- group
+			{ "<leader>G", group = "Git" }, -- group
+			{ "<leader>j", group = "Jump" }, -- group
+			{ "<leader>w", group = "Workspace" }, -- group
 		})
 	end,
 }

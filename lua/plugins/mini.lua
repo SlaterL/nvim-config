@@ -33,5 +33,17 @@ return { -- Collection of various small independent plugins/modules
 		-- ... and there is more!
 		--  Check out: https://github.com/echasnovski/mini.nvim
 		require("mini.pairs").setup()
+
+		-- require("mini.snippets").setup({
+		-- 	snippets = {
+		-- 		-- Load custom file with global snippets first (adjust for Windows)
+		-- 		-- gen_loader.from_file("~/.config/nvim/snippets/global.json"),
+		--
+		-- 		require("mini.snippets").gen_loader.from_lang(),
+		-- 	},
+		-- 	mappings = {
+		-- 		expand = "<C-j>",
+		-- 	},
+		-- })
 	end,
 }
