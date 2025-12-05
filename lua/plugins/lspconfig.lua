@@ -80,7 +80,7 @@ return {
 
 				-- Rename the variable under your cursor
 				--  Most Language Servers support renaming across files, etc.
-				map("<leader>pv", vim.lsp.buf.rename, "R[e]place [v]ariable")
+				map("<leader>pv", vim.lsp.buf.rename, "Re[p]lace [v]ariable")
 
 				-- Execute a code action, usually your cursor needs to be on top of an error
 				-- or a suggestion from your LSP for this to activate.
@@ -177,7 +177,12 @@ return {
 		--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 		local servers = {
 			-- clangd = {},
-			-- gopls = {},
+			gopls = {
+				settings = {
+					completeUnimported = true,
+					usePlaceholders = true,
+				},
+			},
 			-- pyright = {},
 			-- rust_analyzer = {},
 			-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -189,6 +194,26 @@ return {
 			-- tsserver = {},
 			--
 			pylsp = {
+				enable = false,
+				configurationSources = { "flake8" },
+				plugins = {
+					black = { enabled = false }, -- black doesn't use executable
+					flake8 = {
+						enabled = false,
+						ignore = { "BLK100", "E1", "E2", "E3", "E5", "I", "W291" },
+						executable = ".venv/bin/flake8",
+					},
+					jedi = { environment = ".venv/bin/python" },
+					mccabe = { enabled = false },
+					mypy = { enabled = false }, -- mypy does not use executable
+					pycodestyle = { enabled = false },
+					pydocstyle = { enabled = false },
+					pyflakes = { enabled = false },
+					pylint = { enabled = false },
+					rope_autoimport = { enabled = true },
+					yapf = { enabled = false },
+					ruff = { enabled = true },
+				},
 				on_attach = function(client, bufnr)
 					client.server_capabilities.documentFormattingProvider = false
 				end,
