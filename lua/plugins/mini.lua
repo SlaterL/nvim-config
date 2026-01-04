@@ -45,5 +45,34 @@ return { -- Collection of various small independent plugins/modules
 		-- 		expand = "<C-j>",
 		-- 	},
 		-- })
+
+		require("mini.sessions").setup({
+			autoread = false,
+			autowrite = true,
+			directory = vim.fn.stdpath("data") .. "/sessions",
+		})
+		local function project()
+			return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+		end
+
+		vim.keymap.set("n", "<leader>ss", function()
+			require("mini.sessions").write(project())
+		end, { desc = "[S]ession [S]ave" })
+
+		vim.keymap.set("n", "<leader>sr", function()
+			require("mini.sessions").read(project())
+		end, { desc = "[S]ession [R]esume" })
+
+		vim.keymap.set("n", "<leader>sR", function()
+			require("mini.sessions").select("read")
+		end, { desc = "[S]ession [R]esume (pick)" })
+
+		vim.keymap.set("n", "<leader>sd", function()
+			require("mini.sessions").delete(project())
+		end, { desc = "[S]ession [D]elete" })
+
+		vim.keymap.set("n", "<leader>sD", function()
+			require("mini.sessions").select("delete")
+		end, { desc = "[S]ession [D]elete (pick)" })
 	end,
 }

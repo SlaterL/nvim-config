@@ -35,7 +35,7 @@ map("v", "J", ":m '>+1<CR>gv=gv")
 map("v", "K", ":m '<-2<CR>gv=gv")
 
 map("n", "J", "<cmd>lua vim.diagnostic.open_float()<cr>")
-map("n", "<leader>st", "<cmd>TodoTelescope<cr>", { desc = "[S]earch [T]odo list" })
+map("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "[F]earch [T]odo list" })
 
 map("v", "<", "<gv")
 map("v", ">", ">gv")

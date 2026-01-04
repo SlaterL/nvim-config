@@ -31,6 +31,13 @@ return {
     -- stylua: ignore
     dashboard.section.buttons.val = {
       dashboard.button("f", " " .. " Find file",       "<cmd> Telescope find_files <cr>"),
+	  dashboard.button("s", "󰁯  Resume last session", function()
+			local project = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+			require("mini.sessions").read(project)
+		  end),
+	  dashboard.button("S", "󰁯  Pick session", function()
+			require("mini.sessions").select("read")
+		  end),
       dashboard.button("n", " " .. " New file",        "<cmd> ene <BAR> startinsert <cr>"),
       dashboard.button("r", " " .. " Recent files",    "<cmd> Telescope oldfiles <cr>"),
       dashboard.button("g", " " .. " Find text",       "<cmd> Telescope live_grep <cr>"),
