@@ -55,7 +55,7 @@ return { -- Collection of various small independent plugins/modules
 			return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
 		end
 
-		vim.keymap.set("n", "<leader>ss", function()
+		vim.keymap.set("n", "<leader>Ss", function()
 			require("mini.sessions").write(project())
 		end, { desc = "[S]ession [S]ave" })
 
@@ -63,15 +63,15 @@ return { -- Collection of various small independent plugins/modules
 			require("mini.sessions").read(project())
 		end, { desc = "[S]ession [R]esume" })
 
-		vim.keymap.set("n", "<leader>sR", function()
+		vim.keymap.set("n", "<leader>SR", function()
 			require("mini.sessions").select("read")
 		end, { desc = "[S]ession [R]esume (pick)" })
 
-		vim.keymap.set("n", "<leader>sd", function()
+		vim.keymap.set("n", "<leader>Sd", function()
 			require("mini.sessions").delete(project())
 		end, { desc = "[S]ession [D]elete" })
 
-		vim.keymap.set("n", "<leader>sD", function()
+		vim.keymap.set("n", "<leader>SD", function()
 			require("mini.sessions").select("delete")
 		end, { desc = "[S]ession [D]elete (pick)" })
 	end,

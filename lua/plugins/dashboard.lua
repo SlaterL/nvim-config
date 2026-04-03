@@ -26,7 +26,6 @@ return {
 │ └─────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────┘
     ]]
-
 		dashboard.section.header.val = vim.split(logo, "\n")
     -- stylua: ignore
     dashboard.section.buttons.val = {
