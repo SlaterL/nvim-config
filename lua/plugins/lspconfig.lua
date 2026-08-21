@@ -179,8 +179,11 @@ return {
 			-- clangd = {},
 			gopls = {
 				settings = {
-					completeUnimported = true,
-					usePlaceholders = true,
+					gopls = {
+						completeUnimported = true,
+						usePlaceholders = true,
+						buildFlags = { "-tags=integration" },
+					},
 				},
 			},
 			-- pyright = {},

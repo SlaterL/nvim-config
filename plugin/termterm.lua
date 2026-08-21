@@ -1,3 +1,6 @@
+local piterm = require("piterm")
+require("pi_sessions") -- registers :PiSessions + <leader>ps
+
 local state = {
 	floating = {
 		buf = -1,
@@ -35,6 +38,9 @@ local create_floating_window = function(opts)
 
 	return { buf = buf, win = win }
 end
+
+vim.api.nvim_create_user_command("Floatpi", piterm.toggle, {})
+vim.keymap.set({ "n", "t" }, "<C-e>", piterm.toggle, { desc = "Toggle floating pi terminal" })
 
 local toggle_terminal = function()
 	if not vim.api.nvim_win_is_valid(state.floating.win) then
