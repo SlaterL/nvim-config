@@ -40,7 +40,7 @@ map("n", "<leader>st", "<cmd>TodoTelescope<cr>", { desc = "[S]earch [T]odo list"
 map("v", "<", "<gv")
 map("v", ">", ">gv")
 
-map("n", "<leader>_", "<cmd>LspRestart gopls<cr>")
+map("n", "<leader>_", "<cmd>lsp restart<cr>")
 
 map("n", "<A-j>", "<cmd>cnext<CR>zz")
 map("n", "<A-k>", "<cmd>cprev<CR>zz")
