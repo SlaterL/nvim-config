@@ -37,7 +37,7 @@ require("configs.autocmds")
 -- it renders on the startup buffer. (These don't need deferred plugin/ sourcing.)
 require("pack.colorscheme")
 vim.cmd([[colorscheme moonfly]])
-require("pack.dashboard")
+require("pack.snacks")
 
 -- Load the remaining pack plugins after startup so :packadd sources each
 -- plugin's plugin/ files (skipped during startup, which breaks user commands).

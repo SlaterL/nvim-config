@@ -146,7 +146,9 @@ local function preview_lines(path)
 	return out
 end
 
--- Telescope-based picker (falls back to vim.ui.select if unavailable).
+-- snacks.nvim picker for pi sessions.
+-- Each item carries a pre-rendered preview so snacks can display it with the
+-- built-in "preview" shorthand (same pattern used by codecompanion.nvim).
 function M.pick()
 	local sessions = M.list()
 	if #sessions == 0 then
@@ -154,68 +156,32 @@ function M.pick()
 		return
 	end
 
-	local ok_tel, pickers = pcall(require, "telescope.pickers")
-	if not ok_tel then
-		local labels = vim.tbl_map(display_label, sessions)
-		vim.ui.select(sessions, {
-			prompt = "Pi sessions",
-			format_item = function(s)
-				return display_label(s)
-			end,
-		}, function(choice)
-			if choice then
-				require("piterm").open_session(choice.id)
+	local items = vim.tbl_map(function(s)
+		return {
+			-- 'text' drives fuzzy filtering in the picker.
+			text    = display_label(s),
+			session = s,
+			-- snacks reads item.preview when preview = "preview" is set.
+			preview = { text = table.concat(preview_lines(s.path), "\n"), ft = "markdown" },
+		}
+	end, sessions)
+
+	Snacks.picker({
+		title   = "Pi Sessions (" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":~") .. ")",
+		items   = items,
+		preview = "preview",
+		format  = function(item) return { { item.text } } end,
+		confirm = function(picker, item)
+			picker:close()
+			if item then
+				require("piterm").open_session(item.session.id)
 			end
-		end)
-		return
-	end
-
-	local finders = require("telescope.finders")
-	local conf = require("telescope.config").values
-	local actions = require("telescope.actions")
-	local action_state = require("telescope.actions.state")
-	local previewers = require("telescope.previewers")
-
-	pickers
-		.new({}, {
-			prompt_title = "Pi Sessions (" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":~") .. ")",
-			finder = finders.new_table({
-				results = sessions,
-				entry_maker = function(s)
-					local label = display_label(s)
-					return {
-						value = s,
-						display = label,
-						ordinal = (s.name or "") .. " " .. (s.summary or ""),
-						path = s.path,
-					}
-				end,
-			}),
-			sorter = conf.generic_sorter({}),
-			previewer = previewers.new_buffer_previewer({
-				title = "Session Preview",
-				define_preview = function(self, entry)
-					local lines = preview_lines(entry.value.path)
-					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
-					vim.bo[self.state.bufnr].filetype = "markdown"
-				end,
-			}),
-			attach_mappings = function(prompt_bufnr)
-				actions.select_default:replace(function()
-					local entry = action_state.get_selected_entry()
-					actions.close(prompt_bufnr)
-					if entry then
-						require("piterm").open_session(entry.value.id)
-					end
-				end)
-				return true
-			end,
-		})
-		:find()
+		end,
+	})
 end
 
 -- Open the picker; when called from terminal mode, drop to normal mode first
--- so Telescope's floating window behaves correctly.
+-- so the snacks picker floating window behaves correctly.
 local function pick_from_terminal()
 	vim.cmd("stopinsert")
 	vim.schedule(M.pick)
