@@ -106,29 +106,35 @@ local servers = {
 		},
 	},
 	pylsp = {
-		enable = false,
-		configurationSources = { "flake8" },
-		plugins = {
-			black = { enabled = false },
-			flake8 = {
-				enabled = false,
-				ignore = { "BLK100", "E1", "E2", "E3", "E5", "I", "W291" },
-				executable = ".venv/bin/flake8",
+		settings = {
+			pylsp = {
+				configurationSources = { "flake8" },
+				plugins = {
+					black = { enabled = false },
+					flake8 = {
+						enabled = false,
+						ignore = { "BLK100", "E1", "E2", "E3", "E5", "I", "W291" },
+						executable = ".venv/bin/flake8",
+					},
+					jedi = { environment = ".venv/bin/python" },
+					mccabe = { enabled = false },
+					mypy = { enabled = false },
+					pycodestyle = { enabled = false },
+					pydocstyle = { enabled = false },
+					pyflakes = { enabled = false },
+					pylint = { enabled = false },
+					rope_autoimport = { enabled = true },
+					yapf = { enabled = false },
+					-- Keep ruff running, but stop it from wrapping long lines.
+					ruff = {
+						enabled = true,
+						lineLength = 999,
+						extendIgnore = { "E501" },
+						formatEnabled = true,
+					},
+				},
 			},
-			jedi = { environment = ".venv/bin/python" },
-			mccabe = { enabled = false },
-			mypy = { enabled = false },
-			pycodestyle = { enabled = false },
-			pydocstyle = { enabled = false },
-			pyflakes = { enabled = false },
-			pylint = { enabled = false },
-			rope_autoimport = { enabled = true },
-			yapf = { enabled = false },
-			ruff = { enabled = true },
 		},
-		on_attach = function(client, bufnr)
-			client.server_capabilities.documentFormattingProvider = false
-		end,
 	},
 	lua_ls = {
 		settings = {

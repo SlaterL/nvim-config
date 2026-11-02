@@ -50,11 +50,6 @@ require("snacks").setup({
 			},
 		},
 	},
-
-	-- Explicitly disable components we don't use, so they don't clash with
-	-- existing plugins (nvim-notify handles notifications, alpha/dashboard.lua
-	-- handles the start screen, etc.)
-	bigfile = { enabled = false },
 	dashboard = {
 		enabled = true,
 		-- Override dashboard sections to exclude lazy.stats dependent components
@@ -71,6 +66,10 @@ require("snacks").setup({
 			},
 		},
 	},
+	-- Explicitly disable components we don't use, so they don't clash with
+	-- existing plugins (nvim-notify handles notifications, alpha/dashboard.lua
+	-- handles the start screen, etc.)
+	bigfile = { enabled = false },
 	explorer = { enabled = false },
 	indent = { enabled = false },
 	input = { enabled = false },

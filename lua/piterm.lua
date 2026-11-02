@@ -1,4 +1,4 @@
--- Reusable module that manages the floating "pi" terminal.
+-- Reusable module that manages the floating "claude" terminal.
 -- Used by plugin/termterm.lua (<C-e> toggle) and lua/pi_sessions.lua (session picker).
 
 local M = {}
@@ -29,15 +29,15 @@ local function open_window(buf)
 	return vim.api.nvim_open_win(buf, true, win_config())
 end
 
--- Start pi in a fresh terminal buffer inside the current window.
-local function start_pi(cmd)
+-- Start claude in a fresh terminal buffer inside the current window.
+local function start_claude(cmd)
 	vim.cmd.terminal()
 	state.buf = vim.api.nvim_get_current_buf()
 	state.job = vim.bo.channel
 	vim.fn.chansend(state.job, cmd .. "\n")
 end
 
--- Toggle the pi terminal window (mirrors the original <C-e> behavior).
+-- Toggle the claude terminal window (mirrors the original <C-e> behavior).
 function M.toggle()
 	if vim.api.nvim_win_is_valid(state.win) then
 		vim.api.nvim_win_hide(state.win)
@@ -45,17 +45,17 @@ function M.toggle()
 	end
 
 	if vim.api.nvim_buf_is_valid(state.buf) and vim.bo[state.buf].buftype == "terminal" then
-		-- Reuse the existing pi terminal.
+		-- Reuse the existing claude terminal.
 		state.win = open_window(state.buf)
 	else
 		state.win = open_window(vim.api.nvim_create_buf(false, true))
-		start_pi("pi")
+		start_claude("claude")
 	end
 	vim.cmd("startinsert")
 end
 
--- Replace whatever is in the pi terminal with a fresh `pi` invocation.
--- `extra_args` is an optional string appended to the `pi` command.
+-- Replace whatever is in the claude terminal with a fresh `claude` invocation.
+-- `extra_args` is an optional string appended to the `claude` command.
 function M.open_with(extra_args)
 	if vim.api.nvim_win_is_valid(state.win) then
 		vim.api.nvim_win_hide(state.win)
@@ -66,17 +66,17 @@ function M.open_with(extra_args)
 	state.buf = -1
 
 	state.win = open_window(vim.api.nvim_create_buf(false, true))
-	local cmd = "pi"
+	local cmd = "claude"
 	if extra_args and extra_args ~= "" then
 		cmd = cmd .. " " .. extra_args
 	end
-	start_pi(cmd)
+	start_claude(cmd)
 	vim.cmd("startinsert")
 end
 
--- Replace the pi terminal with a specific resumed session.
+-- Replace the claude terminal with a specific resumed session.
 function M.open_session(id)
-	M.open_with("--session " .. vim.fn.shellescape(id))
+	M.open_with("--resume " .. vim.fn.shellescape(id))
 end
 
 return M

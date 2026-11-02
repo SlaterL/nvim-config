@@ -45,5 +45,6 @@ require("vscode").setup({
 	},
 })
 
--- moonfly is a vimscript colorscheme (bluz71/vim-moonfly-colors); no setup needed.
--- The actual `:colorscheme moonfly` call lives in init.lua.
+vim.g.moonflyItalics = true
+vim.cmd.colorscheme("moonfly")
+vim.opt.spell = true

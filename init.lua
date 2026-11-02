@@ -36,7 +36,6 @@ require("configs.autocmds")
 -- the :colorscheme command below, and the dashboard must load before VimEnter so
 -- it renders on the startup buffer. (These don't need deferred plugin/ sourcing.)
 require("pack.colorscheme")
-vim.cmd([[colorscheme moonfly]])
 require("pack.snacks")
 
 -- Load the remaining pack plugins after startup so :packadd sources each
@@ -54,6 +53,9 @@ vim.schedule(function()
 		end
 	end
 end)
+
+-- Treat camelCase and PascalCase identifiers as separate words for spell checking
+vim.opt.spelloptions:append("camel")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -1,33 +1,22 @@
--- Interactive picker for pi sessions in the current working directory.
--- Selecting a session replaces the running pi session in the <C-e> floating
+-- Interactive picker for Claude Code sessions in the current working directory.
+-- Selecting a session replaces the running claude session in the <C-e> floating
 -- terminal via require("piterm").open_session(id).
 
 local M = {}
 
-local SESSIONS_ROOT = vim.fn.expand("~/.pi/agent/sessions")
+local SESSIONS_ROOT = vim.fn.expand("~/.claude/projects")
 
--- pi encodes a session's cwd as the directory name by replacing "/" with "-"
--- and wrapping the whole thing in leading/trailing "--".
--- e.g. /Users/me/.config/nvim -> --Users-me-.config-nvim--
+-- Claude Code encodes a session's cwd as the directory name by replacing every
+-- non-alphanumeric character with "-".
+-- e.g. /Users/me/.config/nvim -> -Users-me--config-nvim
 local function encoded_dir(cwd)
-	return "-" .. cwd:gsub("/", "-") .. "--"
+	return (cwd:gsub("[^%w]", "-"))
 end
 
-local function relative_time(ts)
-	-- ts like 2026-08-21T16-25-02-323Z (from filename) or ISO with ":" (from record)
-	local y, mo, d, h, mi = ts:match("(%d+)%D(%d+)%D(%d+)%D(%d+)%D(%d+)")
-	if not y then
-		return ts
-	end
-	local t = os.time({
-		year = tonumber(y),
-		month = tonumber(mo),
-		day = tonumber(d),
-		hour = tonumber(h),
-		min = tonumber(mi),
-		sec = 0,
-	})
-	local diff = os.time() - t
+-- Human-friendly age of a unix timestamp (e.g. a session file's mtime).
+local function relative_time(t)
+	local now = os.time()
+	local diff = now - t
 	if diff < 60 then
 		return "just now"
 	elseif diff < 3600 then
@@ -55,40 +44,53 @@ local function first_text(content)
 	return nil
 end
 
--- Parse a session .jsonl file: return { id, name, timestamp, summary }.
+-- Text of a real (human-typed) user or assistant message record, or nil for
+-- tool results, meta/injected messages, and slash-command echoes.
+local function message_text(rec)
+	if (rec.type ~= "user" and rec.type ~= "assistant") or rec.isMeta or rec.isSidechain then
+		return nil
+	end
+	local txt = rec.message and first_text(rec.message.content)
+	if not txt or txt:match("^%s*<") then
+		return nil
+	end
+	return txt
+end
+
+-- Parse a session .jsonl file: return { id, name, summary }.
+-- Sessions without any real user message (e.g. only slash commands) return nil.
 local function parse_session(path)
-	local info = { path = path }
-	local ok, lines = pcall(vim.fn.readfile, path, "", 60)
+	local info = { path = path, id = vim.fn.fnamemodify(path, ":t:r") }
+	local ok, lines = pcall(vim.fn.readfile, path)
 	if not ok then
 		return nil
 	end
+	local custom_title, ai_title
 	for _, line in ipairs(lines) do
-		if line ~= "" then
+		-- Cheap string checks before decoding; session files can be large.
+		local want = line:find('"type":"custom-title"', 1, true)
+			or line:find('"type":"ai-title"', 1, true)
+			or (not info.summary and line:find('"type":"user"', 1, true))
+		if want then
 			local decoded, rec = pcall(vim.json.decode, line)
 			if decoded and type(rec) == "table" then
-				if rec.type == "session" then
-					info.id = rec.id
-					info.timestamp = rec.timestamp
-					info.name = rec.name
-				elseif rec.name and not info.name then
-					info.name = rec.name
-				elseif not info.summary and rec.type == "message" and rec.message and rec.message.role == "user" then
-					local txt = first_text(rec.message.content)
+				if rec.type == "custom-title" and rec.customTitle then
+					custom_title = rec.customTitle
+				elseif rec.type == "ai-title" and rec.aiTitle then
+					ai_title = rec.aiTitle
+				elseif not info.summary and rec.type == "user" then
+					local txt = message_text(rec)
 					if txt then
-						txt = txt:gsub("%s+", " "):gsub("^%s+", "")
-						info.summary = txt
+						info.summary = txt:gsub("%s+", " "):gsub("^%s+", "")
 					end
 				end
 			end
 		end
 	end
-	if not info.id then
-		-- Fall back to the UUID embedded in the filename.
-		info.id = vim.fn.fnamemodify(path, ":t"):match("_([%x%-]+)%.jsonl$")
+	if not info.summary then
+		return nil
 	end
-	if not info.timestamp then
-		info.timestamp = vim.fn.fnamemodify(path, ":t"):match("^([%dTZ%-]+)_") or ""
-	end
+	info.name = custom_title or ai_title
 	return info
 end
 
@@ -113,30 +115,31 @@ end
 
 local function display_label(s)
 	local title = s.name or s.summary or "(no messages)"
-	return string.format("%-9s  %s", relative_time(s.timestamp), title)
+	return string.format("%-9s  %s", relative_time(s.mtime), title)
 end
 
 -- Build a human-readable preview of a session's first several messages.
 local function preview_lines(path)
 	local out = {}
-	local ok, lines = pcall(vim.fn.readfile, path, "", 200)
+	local ok, lines = pcall(vim.fn.readfile, path, "", 400)
 	if not ok then
 		return { "Could not read session file." }
 	end
 	local count = 0
 	for _, line in ipairs(lines) do
-		if line ~= "" and count < 10 then
+		if count >= 10 then
+			break
+		end
+		if line:find('"type":"user"', 1, true) or line:find('"type":"assistant"', 1, true) then
 			local decoded, rec = pcall(vim.json.decode, line)
-			if decoded and type(rec) == "table" and rec.type == "message" and rec.message then
-				local txt = first_text(rec.message.content)
-				if txt then
-					table.insert(out, "### " .. tostring(rec.message.role))
-					for _, l in ipairs(vim.split(txt, "\n", { plain = true })) do
-						table.insert(out, l)
-					end
-					table.insert(out, "")
-					count = count + 1
+			local txt = decoded and type(rec) == "table" and message_text(rec)
+			if txt then
+				table.insert(out, "### " .. tostring(rec.message.role))
+				for _, l in ipairs(vim.split(txt, "\n", { plain = true })) do
+					table.insert(out, l)
 				end
+				table.insert(out, "")
+				count = count + 1
 			end
 		end
 	end
@@ -146,13 +149,13 @@ local function preview_lines(path)
 	return out
 end
 
--- snacks.nvim picker for pi sessions.
+-- snacks.nvim picker for Claude sessions.
 -- Each item carries a pre-rendered preview so snacks can display it with the
 -- built-in "preview" shorthand (same pattern used by codecompanion.nvim).
 function M.pick()
 	local sessions = M.list()
 	if #sessions == 0 then
-		vim.notify("No pi sessions found for " .. vim.fn.getcwd(), vim.log.levels.WARN)
+		vim.notify("No Claude sessions found for " .. vim.fn.getcwd(), vim.log.levels.WARN)
 		return
 	end
 
@@ -167,7 +170,7 @@ function M.pick()
 	end, sessions)
 
 	Snacks.picker({
-		title   = "Pi Sessions (" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":~") .. ")",
+		title   = "Claude Sessions (" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":~") .. ")",
 		items   = items,
 		preview = "preview",
 		format  = function(item) return { { item.text } } end,
@@ -187,9 +190,9 @@ local function pick_from_terminal()
 	vim.schedule(M.pick)
 end
 
-vim.api.nvim_create_user_command("PiSessions", M.pick, {})
-vim.keymap.set("n", "<leader>ps", M.pick, { desc = "[P]i [S]ession picker" })
--- Also available inside the pi float (terminal mode).
-vim.keymap.set("t", "<C-s>", pick_from_terminal, { desc = "[P]i [S]ession picker" })
+vim.api.nvim_create_user_command("ClaudeSessions", M.pick, {})
+vim.keymap.set("n", "<leader>ps", M.pick, { desc = "Claude [S]ession picker" })
+-- Also available inside the claude float (terminal mode).
+vim.keymap.set("t", "<C-s>", pick_from_terminal, { desc = "Claude [S]ession picker" })
 
 return M

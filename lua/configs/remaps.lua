@@ -45,8 +45,8 @@ map("n", "<leader>_", "<cmd>lsp restart<cr>")
 map("n", "<A-j>", "<cmd>cnext<CR>zz")
 map("n", "<A-k>", "<cmd>cprev<CR>zz")
 
-map("n", "<leader>pw", [[:%s/<C-r><C-w>//gc<Left><Left><Left>]], { desc = "Re[p]lace [w]ord" })
-map("n", "<leader>pp", [[:%s///gc<Left><Left><Left><Left>]], { desc = "Re[p]lace custom" })
-map("n", "<leader>pc", [[:cdo %s///gc<Left><Left><Left><Left>]], { desc = "Re[p]lace quickfix" })
+map("n", "<leader>pw", [[:%s,<C-r><C-w>,,gc<Left><Left><Left>]], { desc = "Re[p]lace [w]ord" })
+map("n", "<leader>pp", [[:%s,,,gc<Left><Left><Left><Left>]], { desc = "Re[p]lace custom" })
+map("n", "<leader>pc", [[:cdo %s,,,gc<Left><Left><Left><Left>]], { desc = "Re[p]lace quickfix" })
 
 map("n", "d", '"_d', { desc = "Better Del", noremap = true })
